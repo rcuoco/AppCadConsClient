@@ -1,0 +1,64 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Principal.master.cs" Inherits="SPTC.Site.Principal" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR">
+<head runat="server">
+
+    <link href="<%# Page.ResolveClientUrl("~/Styles/general.css")%>" rel="stylesheet" type="text/css" />
+    <link rel="icon" href="<%# Page.ResolveClientUrl("~/Images/background/favicon.ico")%>" type="image/x-icon" />
+
+    <asp:PlaceHolder runat="server" ID="container_GetWebConfig"></asp:PlaceHolder>
+
+    <script type="text/javascript" src="<%# Page.ResolveClientUrl("~/scripts/jquery-3.7.1.js") %>"></script>
+    <script type="text/javascript" src="<%# Page.ResolveClientUrl("~/scripts/jquery-3.7.1.min.js") %>"></script>
+    <script type="text/javascript" src="<%# Page.ResolveClientUrl("~/scripts/jquery.mask.min.js") %>"></script>
+
+    <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+
+</head>
+<body class="fundo1">
+    <form id="form1" runat="server">
+
+        <table class="wrapper" align="center" cellpadding="0" cellspacing="3px">
+            <tr>
+                <td>
+                    <ul id='menu_top' runat="server">
+                        <li><a id="lnkHome" runat="server" href="#">Página Inicial</a></li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td id="TitleContainer" runat="server" style="padding-top: 15px; padding-left: 10px; padding-right: 10px;">
+                    <div class="titleContainer" runat="server">
+                        <div class="title">
+                            <asp:Label ID="lblTituloPagina" Text="[Título Página]" Style="margin-top: -10px" Font-Bold="true" runat="server" />
+                        </div>
+                        <div id="titleComplement" class="titleComplement" runat="server"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id="main-content">
+
+                        <asp:ContentPlaceHolder ID="Content" runat="server">
+                        </asp:ContentPlaceHolder>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td style="height: 80px;"></td>
+            </tr>
+            <tr>
+                <td style="padding: 5px 0 5px 0; width: 1920px; text-align: center; vertical-align: middle; border-top: solid 1px #CCC;" class="rotulo">
+                    <a href="https://api.whatsapp.com/send?phone=+5511912879724&text=Ol%C3%A1+Rafaela%2C+estou+entrando+em+contato+pelo+link+da+%22Pequena+Aplica%C3%A7%C3%A3o+de+Cadastro+e+Consulta+de+Clientes%22+%F0%9F%91%8B">
+                        Desenvolvido por Rafaela Cuoco - Telefone: (11) 91287-9724</a>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
+
+
