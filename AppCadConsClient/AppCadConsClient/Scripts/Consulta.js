@@ -1,4 +1,5 @@
 ﻿$(document).ready(function () {
+
     // Aplica a máscara de CPF usando o plugin jQuery Mask
     $('.cpf').mask('000.000.000-00');
     $('.nascimento').mask('00/00/0000');
@@ -31,7 +32,6 @@
 });
 
 
-
 function bloquearBotao(idbotao) {
     // Bloqueia o botão
     var idCompleto = idbotao.split('|');
@@ -48,4 +48,43 @@ function bloquearBotao(idbotao) {
     }
     var clicado = 'ctl00$Content$' + idbotao.split('|')[0];
     __doPostBack(clicado, '');
+}
+
+function Limpar() {
+    $('.nome').val('');
+    $('.nascimento').val('');
+    $('.cpf').val('');
+    var clicado = 'ctl00$Content$triggerLimpar';
+    __doPostBack(clicado, '');
+}
+
+function modalEdit() {
+    $("#modalEditExclui").fadeIn(400).slideDown(500).dialog({
+        modal: true,            // Faz com que o fundo fique desabilitado
+        width: 700,             // Largura da modal
+        height: 850,            // Altura da modal
+        resizable: false,       // Se você quer que o tamanho seja fixo
+        draggable: true,        // Se você não quer que a modal seja arrastável
+        closeOnEscape: false,   // Desativa o "X" de fechar
+        buttons: {
+            "Fechar": function () {
+                $(this).slideUp(500).dialog('close');
+            }
+        }
+    });
+}
+function modalSalvarEdit() {
+    $("#modalSalvarEdit").fadeIn(400).slideDown(500).dialog({
+        modal: true,            // Faz com que o fundo fique desabilitado
+        width: 700,             // Largura da modal
+        height: 850,            // Altura da modal
+        resizable: false,       // Se você quer que o tamanho seja fixo
+        draggable: true,        // Se você não quer que a modal seja arrastável
+        closeOnEscape: false,   // Desativa o "X" de fechar
+        buttons: {
+            "Fechar": function () {
+                $(this).slideUp(500).dialog('close');
+            }
+        }
+    });
 }

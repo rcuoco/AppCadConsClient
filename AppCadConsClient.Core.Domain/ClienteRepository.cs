@@ -7,6 +7,7 @@ using System.Text;
 
 namespace AppCadConsClient.Core.Domain
 {
+    [Serializable]
     public class Cliente
     {
         public int IdCliente { get; set; }
@@ -20,6 +21,7 @@ namespace AppCadConsClient.Core.Domain
         public int IdCity { get; set; }
         public int IdUF { get; set; }
         public string CEP { get; set; }
+        public string UltimaPesquisa { get; set; }
     }
 
     public class ClienteRepository : RepositoryBase
@@ -31,6 +33,26 @@ namespace AppCadConsClient.Core.Domain
             _connectionString = ConnectionString();
         }
 
+        // Método para deletar um cliente
+        public bool DeletarCliente(int IdCliente)
+        {
+            int rowsAffected = 0;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand("DeletarCliente", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@IdCliente", IdCliente);
+                    connection.Open();
+                    rowsAffected = command.ExecuteNonQuery();
+                }
+                connection.Close();
+                connection.Dispose();
+            }
+            return rowsAffected > 0;
+        }
         // Método para cadastrar um cliente
         public bool InserirCliente(Cliente cliente)
         {
@@ -116,8 +138,9 @@ namespace AppCadConsClient.Core.Domain
                     command.Parameters.AddWithValue("@DataNascimento", cliente.DataNascimento);
                     command.Parameters.AddWithValue("@Rua", cliente.Rua);
                     command.Parameters.AddWithValue("@Numero", cliente.Numero);
+                    command.Parameters.AddWithValue("@CEP", cliente.CEP);
                     command.Parameters.AddWithValue("@Bairro", cliente.Bairro);
-                    command.Parameters.AddWithValue("@idCyty", cliente.IdCity);
+                    command.Parameters.AddWithValue("@idCity", cliente.IdCity);
                     command.Parameters.AddWithValue("@IdUF", cliente.IdUF);
 
                     connection.Open();
@@ -149,55 +172,57 @@ namespace AppCadConsClient.Core.Domain
         {
             List<Cliente> clientes = new List<Cliente>();
             Cliente client = null;
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            if (nome != "" || datade != "" || dataate != "" || CPF != "")
             {
-                using (SqlCommand command = new SqlCommand("ObterClientes", connection))
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@nome", "%" + nome.Trim().Replace(" ","%") + "%");
-                    command.Parameters.AddWithValue("@datade", datade);
-                    command.Parameters.AddWithValue("@datate", (dataate == null? datade : dataate));
-                    command.Parameters.AddWithValue("@CPF", CPF);
-
-                    connection.Open();
-
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (SqlCommand command = new SqlCommand("ObterClientes", connection))
                     {
-                        if (reader.Read())
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@nome", nome.Trim().Replace(" ", "%"));
+                        command.Parameters.AddWithValue("@datade", datade);
+                        command.Parameters.AddWithValue("@datate", (dataate == null ? datade : dataate));
+                        command.Parameters.AddWithValue("@CPF", CPF);
+
+                        connection.Open();
+
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            client = new Cliente
+                            while (reader.Read())
                             {
-                                IdCliente = Convert.ToInt32(reader["IdCliente"]),
-                                Nome = reader["Nome"].ToString(),
-                                Email = reader["Email"].ToString(),
-                                CPF = reader["CPF"].ToString(),
-                                DataNascimento = Convert.ToDateTime(reader["DataNascimento"]),
-                                Rua = reader["Rua"].ToString(),
-                                Numero = int.Parse(reader["Numero"].ToString()),
-                                Bairro = reader["Bairro"].ToString(),
-                                IdCity = int.Parse(reader["IdCity"].ToString()),
-                                IdUF = int.Parse(reader["IdUF"].ToString()),
-                            };
-                            clientes.Add(client);
+                                client = new Cliente
+                                {
+                                    IdCliente = Convert.ToInt32(reader["IdCliente"]),
+                                    Nome = reader["Nome"].ToString(),
+                                    Email = reader["Email"].ToString(),
+                                    CPF = reader["CPF"].ToString(),
+                                    DataNascimento = Convert.ToDateTime(reader["DataNascimento"]),
+                                    Rua = reader["Rua"].ToString(),
+                                    Numero = int.Parse(reader["Numero"].ToString()),
+                                    Bairro = reader["Bairro"].ToString(),
+                                    IdCity = int.Parse(reader["IdCity"].ToString()),
+                                    IdUF = int.Parse(reader["IdUF"].ToString()),
+                                };
+                                clientes.Add(client);
+                            }
                         }
                     }
                 }
             }
-
             return clientes;
         }
         // Método para buscar um cliente por ID
-        public Cliente ObterClientePorId(int idCliente)
+        public bool ObterClientePorId(int idCliente)
         {
+            bool retorno = false;
             Cliente cliente = null;
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                using (SqlCommand command = new SqlCommand("ObterClientePorId", connection))
+                using (SqlCommand command = new SqlCommand("ObterClientePorID", connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@IdCliente", idCliente);
+                    command.Parameters.AddWithValue("@id", idCliente);
 
                     connection.Open();
 
@@ -215,15 +240,21 @@ namespace AppCadConsClient.Core.Domain
                                 Rua = reader["Rua"].ToString(),
                                 Numero = int.Parse(reader["Numero"].ToString()),
                                 Bairro = reader["Bairro"].ToString(),
+                                CEP = reader["CEP"].ToString(),
                                 IdCity = int.Parse(reader["IdCity"].ToString()),
                                 IdUF = int.Parse(reader["IdUF"].ToString()),
                             };
                         }
                     }
+                    connection.Close();
+                    connection.Dispose();
+                    if (cliente != null)
+                    {
+                        retorno = true;
+                    }
                 }
             }
-
-            return cliente;
+                return retorno;
         }
         // Método para validar um cliente por CPF
         public bool ObterClientePorCPF(string cpf)
@@ -270,6 +301,46 @@ namespace AppCadConsClient.Core.Domain
             }
 
             return retorno;
+        }
+        public Cliente ClientePorCPF(string cpf)
+        {
+            Cliente cliente = null;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand("ObterClientePorCPF", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@cpf", cpf);
+
+                    connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            cliente = new Cliente
+                            {
+                                IdCliente = Convert.ToInt32(reader["IdCliente"]),
+                                Nome = reader["Nome"].ToString(),
+                                Email = reader["Email"].ToString(),
+                                CPF = reader["CPF"].ToString(),
+                                DataNascimento = Convert.ToDateTime(reader["DataNascimento"]),
+                                Rua = reader["Rua"].ToString(),
+                                Numero = int.Parse(reader["Numero"].ToString()),
+                                Bairro = reader["Bairro"].ToString(),
+                                CEP = reader["CEP"].ToString(),
+                                IdCity = int.Parse(reader["IdCity"].ToString()),
+                                IdUF = int.Parse(reader["IdUF"].ToString()),
+                            };
+                        }
+                    }
+                    connection.Close();
+                    connection.Dispose();
+                }
+            }
+
+            return cliente;
         }
     }
 }

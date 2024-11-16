@@ -46,6 +46,9 @@
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0\lib\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -67,16 +70,30 @@
     <Content Include="Default.aspx" />
     <Content Include="Pages\Cadastro.aspx" />
     <Content Include="Pages\Consulta.aspx" />
+    <Content Include="Pages\Edicao.aspx" />
     <Content Include="Principal.Master" />
     <Content Include="Scripts\Cadastro.js" />
+    <Content Include="Scripts\Consulta.js" />
     <Content Include="Scripts\Default.js" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
+    <Content Include="Scripts\Edicao.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
     <Content Include="Scripts\jquery-3.7.1.slim.js" />
     <Content Include="Scripts\jquery-3.7.1.slim.min.js" />
+    <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\jquery.mask.min.js" />
+    <Content Include="Scripts\select2.min.js" />
     <Content Include="Styles\general.css" />
+    <Content Include="Styles\images\favicon.ico" />
+    <Content Include="Styles\images\ui-icons_444444_256x240.png" />
+    <Content Include="Styles\images\ui-icons_555555_256x240.png" />
+    <Content Include="Styles\images\ui-icons_777620_256x240.png" />
+    <Content Include="Styles\images\ui-icons_777777_256x240.png" />
+    <Content Include="Styles\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Styles\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Styles\jquery-ui.css" />
+    <Content Include="Styles\select2.min.css" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +117,13 @@
     </Compile>
     <Compile Include="Pages\Consulta.aspx.designer.cs">
       <DependentUpon>Consulta.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Edicao.aspx.cs">
+      <DependentUpon>Edicao.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Edicao.aspx.designer.cs">
+      <DependentUpon>Edicao.aspx</DependentUpon>
     </Compile>
     <Compile Include="Principal.Master.cs">
       <DependentUpon>Principal.Master</DependentUpon>

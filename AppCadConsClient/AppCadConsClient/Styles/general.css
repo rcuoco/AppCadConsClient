@@ -309,6 +309,7 @@ td.rotulo {
         border: 1px solid #ccc;
         border-radius: 4px;
     }
+
 cpf {
     width: 200px; /* Largura do campo */
     padding: 10px; /* Espaçamento interno */

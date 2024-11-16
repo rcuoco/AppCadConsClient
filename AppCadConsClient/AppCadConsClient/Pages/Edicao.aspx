@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Cadastro" Language="C#" MasterPageFile="~/Principal.Master" AutoEventWireup="true" CodeBehind="Cadastro.aspx.cs" Inherits="AppCadConsClient.Pages.Cadastro" %>
+﻿<%@ Page Title="Edicao" Language="C#" MasterPageFile="~/Principal.Master" AutoEventWireup="true" CodeBehind="Edicao.aspx.cs" Inherits="AppCadConsClient.Pages.Edicao" %>
 
 <asp:Content ID="Content" ContentPlaceHolderID="Content" runat="server">
     <!-- Carrega o arquivo CSS corretamente -->
@@ -71,13 +71,13 @@
 
                                         <div id="divCidade" class="form-group" runat="server">
                                             <asp:Label runat="server" AssociatedControlID="ddlCity" Text="Cidade:" />
-                                            <asp:DropDownList runat="server" ID="ddlCity" class="dropdownlist cidade" AutoPostBack="True" Enabled="false">
+                                            <asp:DropDownList runat="server" ID="ddlCity" class="dropdownlist cidade" AutoPostBack="True">
                                             </asp:DropDownList>
                                         </div>
 
                                         <div class="form-group">
-                                            <asp:Button ID="btnCadastrar" class="btn btn-cad btn-md validarCPF" Text="Cadastrar" runat="server" OnClientClick="bloquearBotao('triggerCadastrar|btnCadastrar');" />
-                                            <asp:Button ID="triggerCadastrar" Style="display: none" runat="server" OnClick="btnCadastrar_Click" />
+                                            <asp:Button ID="btnSalvar" class="btn btn-cad btn-md validarCPF" Text="Salvar" runat="server" OnClientClick="bloquearBotao('triggerSalvar|btnSalvar');" />
+                                            <asp:Button ID="triggerSalvar" Style="display: none" runat="server" OnClick="btnSalvar_Click" />
                                         </div>
                                     </div>
                                 </div>

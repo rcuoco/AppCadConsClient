@@ -6,7 +6,7 @@
 <head runat="server">
 
     <link href="<%# Page.ResolveClientUrl("~/Styles/general.css")%>" rel="stylesheet" type="text/css" />
-    <link rel="icon" href="<%# Page.ResolveClientUrl("~/Images/background/favicon.ico")%>" type="image/x-icon" />
+    <link rel="icon" href="<%# Page.ResolveClientUrl("~/Styles/Images/favicon.ico")%>" type="image/x-icon" />
 
     <asp:PlaceHolder runat="server" ID="container_GetWebConfig"></asp:PlaceHolder>
 

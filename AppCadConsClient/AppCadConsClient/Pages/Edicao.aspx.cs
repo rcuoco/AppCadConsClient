@@ -2,16 +2,19 @@
 using SPTC.Site;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
+using System.Text;
 using System.Web;
+using System.Web.Services.Description;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace AppCadConsClient.Pages
 {
-    public partial class Cadastro : System.Web.UI.Page
+    public partial class Edicao : System.Web.UI.Page
     {
+
         private EstadoCityRepository ControllerEstadoCity = new EstadoCityRepository();
         private ClienteRepository ControllerCliente = new ClienteRepository();
         private Util Util = new Util();
@@ -31,10 +34,28 @@ namespace AppCadConsClient.Pages
                 this.ViewState["citys"] = value;
             }
         }
+        public Cliente CL
+        {
+            get
+            {
+                Cliente o = (Cliente)this.ViewState["cl"];
+
+                if (o == null || (Cliente)o == null)
+                    return null;
+                else
+                    return (Cliente)o;
+            }
+            set
+            {
+                this.ViewState["cl"] = value;
+            }
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
+                Cliente cl = (Cliente)Session["clEdt"];
+                CL = cl;
                 (this.Page.Master as Principal).TituloPagina = "Pequena Aplicação de Cadastro e Consulta de Clientes";
                 LoadEstadoCitys();
             }
@@ -57,78 +78,95 @@ namespace AppCadConsClient.Pages
                 ddlEstado.Items[0].Value = "0";
                 ddlEstado.SelectedValue = "0";
             }
-            //else
-            //ShowMessage("Erro ao carregar o combo Estados.");
-
             #endregion DDL States
 
             #region DDL Citys
 
-
             Citys = ControllerEstadoCity.ListCitys();
             if (Citys.Count() > 0)
             {
+                var cityEstado = Citys.Where(x => x.idUF == CL.IdUF).ToList();
                 ddlCity.DataTextField = "Cidade";
                 ddlCity.DataValueField = "IdCityUF";
-                ddlCity.DataSource = Citys;
+                ddlCity.DataSource = cityEstado;
                 ddlCity.DataBind();
 
                 ddlCity.Items.Insert(0, "Selecione uma Cidade");
                 ddlCity.Items[0].Value = "0";
                 ddlCity.SelectedValue = "0";
             }
-            //else
-            //ShowMessage("Erro ao carregar o combo Estados.");
-
             #endregion DDL Citys
-        }
-        protected void btnCadastrar_Click(object sender, EventArgs e)
-        {
 
-            if (btnCadastrar.Text == "Cadastrar")
+            nome.Text = CL.Nome;
+            cpf.Text = CL.CPF;
+            DataN.Text = CL.DataNascimento.ToString("dd/MM/yyyy");
+            email.Text = CL.Email;
+            rua.Text = CL.Rua;
+            numero.Text = CL.Numero.ToString();
+            Bairro.Text = CL.Bairro;
+            cep.Text = CL.CEP;
+            ddlEstado.SelectedValue = CL.IdUF.ToString();
+            ddlCity.SelectedValue = CL.IdCity.ToString() + "|" + CL.IdUF.ToString();
+        }
+        protected void btnSalvar_Click(object sender, EventArgs e)
+        {
+            if (nome.Text.Length <= 4)
             {
-                if (nome.Text.Length <= 4)
+                Util.ShowMessage(this.Page, "Preencha o nome completo!");
+            }
+            else if (!ValidateCpf(cpf.Text.ToString().Replace(".", "").Replace("-", "").Trim()))
+            {
+                Util.ShowMessage(this.Page, "CPF invalido. Preencha o CPF novamente!");
+            }
+            else if (DataN.Text.ToString().Contains("/0000"))
+            {
+                Util.ShowMessage(this.Page, "Preecha a data de aniversário!");
+            }
+            else if (!email.Text.ToString().Contains("@"))
+            {
+                Util.ShowMessage(this.Page, "Preecha o email!");
+            }
+            else if (ddlEstado.SelectedValue == "0")
+            {
+                Util.ShowMessage(this.Page, "Selecione a cidade para limitar as opções de órgão!");
+            }
+            else if (ddlCity.SelectedValue == "0")
+            {
+                Util.ShowMessage(this.Page, "Selecione a cidade!");
+            }
+            else
+            {
+                if (ValidaCad(CL.IdCliente))
                 {
-                    Util.ShowMessage(this.Page, "Preencha o nome completo!");
-                }
-                else if (!ValidateCpf(cpf.Text.ToString().Replace(".", "").Replace("-", "").Trim()))
-                {
-                    Util.ShowMessage(this.Page, "CPF invalido. Preencha o CPF novamente!");
-                }
-                else if (DataN.Text.ToString().Contains("/0000"))
-                {
-                    Util.ShowMessage(this.Page, "Preecha a data de aniversário!");
-                }
-                else if (!email.Text.ToString().Contains("@"))
-                {
-                    Util.ShowMessage(this.Page, "Preecha o email!");
-                }
-                else if (ddlEstado.SelectedValue == "0")
-                {
-                    Util.ShowMessage(this.Page, "Selecione a cidade para limitar as opções de órgão!");
-                }
-                else if (ddlCity.SelectedValue == "0")
-                {
-                    Util.ShowMessage(this.Page, "Selecione a cidade!");
+                    if (Salvar())
+                    {
+                        if (CL.UltimaPesquisa!= null)
+                        {
+                        string retorno = "";
+                        var lista = CL.UltimaPesquisa.Split('&');
+                        // Transferindo para a próxima página
+                        for (int n = 0; n < lista.Count(); n++)
+                        {
+                            retorno += lista[n].Split('=')[0] + "=" + Convert.ToBase64String(Encoding.UTF8.GetBytes(lista[n].Split('=')[1])).Replace("=","||");
+                            if (lista.Count() - 1 > n )
+                            {
+                                retorno += "&";
+                            }
+                        }
+                        Server.Transfer("Consulta.aspx?" + retorno);
+                        }
+                        else
+                        {
+                            Server.Transfer("Consulta.aspx");
+                        }
+                    }
+
                 }
                 else
                 {
-                    if (ValidaCad(cpf.Text.ToString().Replace(".", "").Replace("-", "").Trim()))
-                    {
-                        if (Cadastrar())
-                        {
-                            Util.ShowMessage(this.Page, "Cliente cadastrador com sucesso");
-                            ScriptManager.RegisterStartupScript(this, this.GetType(), "Redirecionar", "window.location.href = '../#';", true);
-
-                        }
-
-                    }
-                    else
-                    {
-                        Util.ShowMessage(this.Page, "CPF já consta na base de dados");
-                    }
-
+                    Util.ShowMessage(this.Page, "CPF já consta na base de dados");
                 }
+
             }
         }
 
@@ -210,21 +248,15 @@ namespace AppCadConsClient.Pages
 
             return true;
         }
-        private bool ValidaCad(string cpf)
+        private bool ValidaCad(int id)
         {
-            if (ControllerCliente.ObterClientePorCPF(cpf))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return ControllerCliente.ObterClientePorId(id);
         }
-        private bool Cadastrar()
+        private bool Salvar()
         {
             Cliente cliente = new Cliente
             {
+                IdCliente = CL.IdCliente,
                 Nome = nome.Text.Trim(),
                 DataNascimento = Convert.ToDateTime(DataN.Text),
                 CPF = cpf.Text.ToString().Replace(".", "").Replace("-", "").Trim(),
@@ -237,7 +269,7 @@ namespace AppCadConsClient.Pages
                 CEP = cep.Text.Trim(),
             };
 
-            if (!ControllerCliente.InserirCliente(cliente))
+            if (!ControllerCliente.AtualizarCliente(cliente))
             {
                 return false;
             }
